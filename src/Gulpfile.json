@@ -1,0 +1,14 @@
+{
+    "path": {
+        "src": "./",
+        "root": "../",
+        "dist": "../assets/"
+    },
+    "proxy": "localhost:8888",
+    "tasks": {
+        "stylus": true,
+        "js": true,
+        "images": true,
+        "html": false
+    }
+}

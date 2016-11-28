@@ -1,0 +1,96 @@
+@import "imports/08 | fonts";
+@import "imports/10 | functions";
+
+html, body {
+  height: 100%;
+  background-color: #EDEDF0;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  display: table;
+  font-weight: 100;
+  font-family: 'Open Sans Condensed', sans-serif;
+
+
+  .rtl,
+  .ltr {
+    position: relative;
+    -webkit-transition-timing-function: ease-out;
+    -moz-transition-timing-function: ease-out;
+    -ms-transition-timing-function: ease-out;
+    -o-transition-timing-function: ease-out;
+    transition-timing-function: ease-out;
+    opacity: .005;
+    -webkit-transition-duration: .5s; /* Safari */
+    transition-duration: .5s;
+  }
+
+  .rtl {
+    f-transform(-140%);
+  }
+
+  .ltr {
+    f-transform(140%);
+  }
+
+  &.ready {
+    .rtl,
+    .ltr {
+      opacity: 1;
+      f-transform(0px);
+    }
+
+    .logo {
+      opacity: 0;
+      -webkit-transition-duration: .5s; /* Safari */
+      transition-duration: .5s;
+    }
+  }
+}
+
+.container {
+  text-align: center;
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.content {
+  text-align: center;
+  display: inline-block;
+}
+
+.title {
+  font-size: 96px;
+}
+
+.text {
+  font-size: 32px;
+}
+
+.mail {
+  font-size: 24px;
+  color: #939699;
+
+  a {
+    &:hover,
+    &:focus,
+    &:visited {
+      color: #285473;
+      cursor: pointer;
+      text-decoration: none;
+      border-bottom: 1px dotted #285473;
+    }
+  }
+}
+
+.drop-table {
+  display: table;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
