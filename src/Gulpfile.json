@@ -2,13 +2,7 @@
     "path": {
         "src": "./",
         "root": "../",
-        "dist": "../assets/"
+        "dest": "../assets/"
     },
-    "proxy": "localhost:8888",
-    "tasks": {
-        "stylus": true,
-        "js": true,
-        "images": true,
-        "html": false
-    }
+    "proxy": "localhost:8888"
 }

@@ -12,24 +12,35 @@ var fs           = require("fs"),
     autoprefixer = require("gulp-autoprefixer"),
 
     settings     = JSON.parse(fs.readFileSync("Gulpfile.json", "utf8")),
-    path         = settings.path,
-    build        = Object.keys(settings.tasks).filter(function (key) {
-        return settings.tasks[key];
-    });
+    path         = {
+        src:  settings.path.src || "./src",
+        root: settings.path.root || "./",
+        dest: settings.path.dest || "./assets/",
+
+        include: function () {
+            var a = Array.from(arguments);
+            return a.join("/").replace(/\/+/g, "/");
+        },
+        exclude: function () {
+            return "!" + path.include.apply(this, arguments);
+        }
+    };
 
 
 gulp.task("clear:stylus", function () {
     return gulp
-        .src([path.dist + "css"], {read: false})
+        .src([
+            path.include(path.dest, "css")
+        ], {read: false})
         .pipe(rimraf({force: true}));
 });
-gulp.task("stylus:main", function () {
+gulp.task("stylus:main", ["clear:stylus"], function () {
     return gulp
         .src([
-            path.src + "stylus/**/**.styl",
+            path.include(path.src, "stylus/**/**.styl"),
 
-            "!" + path.src + "stylus/separate/**/**.styl",
-            "!" + path.src + "stylus/imports/**/**.styl"
+            path.exclude(path.src, "stylus/separate/**/**.styl"),
+            path.exclude(path.src, "stylus/imports/**/**.styl")
         ])
         .pipe(sourcemaps.init())
         .pipe(stylus({
@@ -40,35 +51,37 @@ gulp.task("stylus:main", function () {
         }))
         .pipe(concat("style.css"))
         .pipe(sourcemaps.write())
-        .pipe(gulp.dest(path.dist + "css"))
+        .pipe(gulp.dest(path.include(path.dest, "css")))
         .pipe(browserSync.stream());
 });
-gulp.task("stylus:separate", function () {
+gulp.task("stylus:separate", ["clear:stylus"], function () {
     return gulp
         .src([
-            path.src + "stylus/separate/**/**.styl"
+            path.include(path.src, "stylus/separate/**/**.styl")
         ])
         .pipe(sourcemaps.init())
         .pipe(stylus({
             compress: true
         }))
         .pipe(sourcemaps.write())
-        .pipe(gulp.dest(path.dist + "css"))
+        .pipe(gulp.dest(path.include(path.dest, "css")))
         .pipe(browserSync.stream());
 });
 
 
 gulp.task("clear:js", function () {
     return gulp
-        .src([path.dist + "js"], {read: false})
+        .src([
+            path.include(path.dest, "js")
+        ], {read: false})
         .pipe(rimraf({force: true}));
 });
-gulp.task("js:main", function () {
+gulp.task("js:main", ["clear:js"], function () {
     return gulp
         .src([
-            path.src + "js/**/**.js",
+            path.include(path.src, "js/**/**.js"),
 
-            "!" + path.src + "js/separate/**/**.js"
+            path.exclude(path.src, "js/separate/**/**.js")
         ])
         .pipe(sourcemaps.init())
         .pipe(uglify({
@@ -76,49 +89,58 @@ gulp.task("js:main", function () {
         }))
         .pipe(concat("main.js"))
         .pipe(sourcemaps.write())
-        .pipe(gulp.dest(path.dist + "js"));
+        .pipe(gulp.dest(path.include(path.dest, "js")));
 });
-gulp.task("js:separate", function () {
+gulp.task("js:separate", ["clear:js"], function () {
     return gulp
         .src([
-            path.src + "js/separate/**/**.js"
+            path.include(path.src, "js/separate/**/**.js")
         ])
         .pipe(sourcemaps.init())
         .pipe(uglify({
             compress: true
         }))
         .pipe(sourcemaps.write())
-        .pipe(gulp.dest(path.dist + "js"));
+        .pipe(gulp.dest(path.include(path.dest, "js")));
 });
-gulp.task("js:reload", function () {
+gulp.task("js:reload", ["js:main", "js:separate"], function () {
     return gulp
-        .src(path.src + "js/**/**.js")
+        .src([
+            path.include(path.src + "js/**/**.js")
+        ])
         .pipe(browserSync.stream());
 });
 
 
 gulp.task("clear:images", function () {
     return gulp
-        .src([path.dist + "images"], {read: false})
+        .src([
+            path.include(path.dist, "images")
+        ], {read: false})
         .pipe(rimraf({force: true}));
 });
 gulp.task("images:copy", function () {
     return gulp
-        .src([path.src + "images/**/**.*"])
-        .pipe(gulp.dest(path.dist + "images"));
+        .src([
+            path.include(path.src, "images/**/**.*")
+        ])
+        .pipe(gulp.dest(path.include(path.dest, "images")));
+});
+
+
+gulp.task("php-html", function () {
+    return gulp
+        .src([
+            path.include(path.root, "**/**.php"),
+            path.include(path.root, "**/**.html")
+        ])
+        .pipe(browserSync.stream());
 });
 
 
 gulp.task("html", function () {
     return gulp
         .src(path.root + "**/**.html")
-        .pipe(browserSync.stream());
-});
-
-
-gulp.task("php", function () {
-    return gulp
-        .src(path.root + "**/**.php")
         .pipe(browserSync.stream());
 });
 
@@ -145,32 +167,31 @@ gulp.task("watch", function (cb) {
         notify: false,
         https:  false,
         open:   false,
-        proxy:  settings.proxy
+        proxy:  settings.proxy || "localhost:8888"
     }, cb);
 
     process.on("exit", function () {
         browserSync.exit();
     });
 
-    if ("stylus" in settings.tasks) {
-        gulp.watch(path.src + "stylus/**/**.styl", ["stylus"]);
-    }
-    if ("js" in settings.tasks) {
-        gulp.watch(path.src + "js/**/**.js", ["js"]);
-    }
-    if ("images" in settings.tasks) {
-        gulp.watch(path.src + "images/**/**.*", ["images"]);
-    }
-    if ("html" in settings.tasks) {
-        gulp.watch(path.root + "**/**.html", ["html"]);
-    }
-    if ("php" in settings.tasks) {
-        gulp.watch(path.root + "**/**.php", ["php"]);
-    }
+    gulp.watch([
+        path.include(path.src, "stylus/**/**.styl")
+    ], ["stylus"]);
+    gulp.watch([
+        path.include(path.src, "js/**/**.js")
+    ], ["js"]);
+    gulp.watch([
+        path.include(path.src, "images/**/**.*")
+    ], ["images"]);
+    gulp.watch([
+        path.include(path.root, "**/**.php"),
+        path.include(path.root, "**/**.html")
+    ], ["php-html"]);
+
 });
 
 
-gulp.task("build", build);
+gulp.task("build", ["stylus", "js", "images"]);
 
 
 gulp.task("default", ["build", "watch"]);
