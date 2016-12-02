@@ -128,7 +128,8 @@
             function cookies(name, value, days, secure) {
 
                 var expires,
-                    domain;
+                    domain,
+                    locProtocol;
 
                 if (!value) {
                     parseCookies();
@@ -142,14 +143,14 @@
                     date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1e3));
                     expires = '; expires=' + date.toGMTString();
                 }
-                domain = window.location.hostname;
-                console.log(document.cookie);
+                domain      = window.location.hostname;
+                locProtocol = window.location.protocol;
+
                 document.cookie = (''
                     + name + '=' + escape(value)
                     + expires
-                    + '; path=/' + (domain ? '; domain=.' + domain : '') + ((secure && locProtocol == 'https:') ? '; secure' : '')
+                    + '; path=/' + (domain ? '; domain=.' + domain : '') + (secure && locProtocol == 'https:' ? '; secure' : '')
                 );
-                console.log(document.cookie);
 
             }
 
@@ -219,18 +220,21 @@
              * @returns {string|boolean|number|object} - Parameter by name or object of all parameters
              */
             function urlParams(name) {
-                var res = {},
-                    loc = location.href;
+                var res      = {},
+                    loc      = location.href,
+                    startPos = loc.indexOf('?') != -1 ? loc.indexOf('?') : loc.indexOf('#') != -1 ? loc.indexOf('#') : false;
 
-                loc
-                    .slice(loc.indexOf('?') + 1)
-                    .replace(/[?#]/, "&")
-                    .split("&")
-                    .forEach(function (elem) {
-                        elem = elem.split("=");
+                if (startPos !== false) {
+                    loc
+                        .slice(startPos + 1)
+                        .replace(/[?#]/, "&")
+                        .split("&")
+                        .forEach(function (elem) {
+                            elem = elem.split("=");
 
-                        res[elem[0]] = elem[1] || true;
-                    });
+                            res[elem[0]] = elem[1] || true;
+                        });
+                }
 
                 return name ? res[name] || null : res;
             }

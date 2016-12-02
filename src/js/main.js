@@ -35,6 +35,48 @@
 
     $(function () {
 
+        (function (window) {
+            window.CoolDate = function CoolDate(timestamp, title, type) {
+                this.__timestamp = timestamp;
+                this.__title     = title;
+                this.__type      = type.toLowerCase();
+            };
+
+            window.CoolDate.prototype = {
+                constructor: CoolDate,
+
+                get timestamp() {
+                    return this.__timestamp;
+                },
+                get title() {
+                    return this.__title;
+                },
+
+                toString: function () {
+                    var days = Math.ceil((this.__timestamp - tT) / 864e5);
+
+                    return [
+                        (days == 1 ? "Завтра" : days == 2 ? "Послезавтра" : ([
+                            "Через",
+                            days,
+                            Slavunya.math(days).declination(["день", "деня", "дней"])
+                        ].join(" "))),
+                        "будет",
+                        this.__type + ".",
+                        this.__title
+                    ].join(" ");
+                }
+            };
+
+            window.CoolDate.__defineGetter__("MONTH", function () {
+                return "Круглая дата";
+            });
+            window.CoolDate.__defineGetter__("COUNT", function () {
+                return "Красивое количество дней";
+            });
+
+        })(window);
+
         var sD   = 11,
             sM   = 7,
             sY   = 2016,
@@ -42,56 +84,31 @@
             tT   = +(new Date),
             days = parseInt((+(new Date) - sT) / 864e5),
             cool = [
-                // полные месяцы
-                +(new Date(sY, sM + 3, sD)),
-                +(new Date(sY, sM + 6, sD)),
-                +(new Date(sY, sM + 9, sD)),
-                +(new Date(sY, sM, sD + 1)),
+                new CoolDate(+(new Date(sY, sM + 3, sD)), "3 месяца", CoolDate.MONTH),
+                new CoolDate(+(new Date(sY, sM + 6, sD)), "полгода", CoolDate.MONTH),
+                new CoolDate(+(new Date(sY, sM + 9, sD)), "9 месяцев", CoolDate.MONTH),
 
-                // 111 дней
-                sT + 111 * 864e5,
-
-                // 123 дня
-                sT + 123 * 864e5,
-
-                // 200 дней
-                sT + 200 * 864e5,
-
-                // 210 дней
-                sT + 210 * 864e5,
-
-                // 222 дня
-                sT + 222 * 864e5
+                new CoolDate(sT + 111 * 864e5, "111 дней", CoolDate.COUNT),
+                new CoolDate(sT + 123 * 864e5, "123 дня", CoolDate.COUNT),
+                new CoolDate(sT + 200 * 864e5, "200 дней", CoolDate.COUNT),
+                new CoolDate(sT + 210 * 864e5, "2 1 0 дней", CoolDate.COUNT),
+                new CoolDate(sT + 222 * 864e5, "222 дня", CoolDate.COUNT),
             ],
-            nearest,
-            title;
+            nearest;
 
-        cool.sort();
+        cool.sort(function (a, b) {
+            return a.timestamp - b.timestamp;
+        });
 
         nearest = cool.filter(function (cool) {
-            return (cool - tT) / 864e5 > 0;
+            return (cool.timestamp - tT) / 864e5 > 0;
         })[0];
-
-        nearest = Math.ceil((nearest - tT) / 864e5);
-
-        if (nearest == 1) {
-            title = "Завтра";
-        } else if (nearest == 2) {
-            title = "Послезавтра";
-        } else {
-            title = [
-                "Через",
-                nearest,
-                Slavunya.math(nearest).declination(["день", "деня", "дней"])
-            ].join(" ");
-        }
-
 
         $(".days")
             .text(days);
 
         $("#nearest")
-            .html(title + " будет<br>красивая дата или юбилей");
+            .html(nearest + "");
 
         $("body")
             .delay(2e3)
