@@ -10,6 +10,7 @@ body {
   margin: 0;
   padding: 0;
   width: 100%;
+  f-no-select();
   display: table;
   font-weight: 100;
   font-family: 'Open Sans Condensed', sans-serif;
@@ -68,11 +69,17 @@ body {
 
 .text {
   font-size: 32px;
+
+  .days {
+    display: inline-block;
+  }
 }
 
 .mail {
   font-size: 24px;
   color: #939699;
+  cursor: pointer;
+  f-no-select();
 
   a {
     &:hover,

@@ -58,7 +58,7 @@
                     return [
                         (days == 1 ? "Завтра" : days == 2 ? "Послезавтра" : ([
                             "Через",
-                            days,
+                            "<b>" + days + "</b>",
                             Slavunya.math(days).declination(["день", "деня", "дней"])
                         ].join(" "))),
                         "будет",
@@ -77,15 +77,15 @@
 
         })(window);
 
-        var sD   = 11,
-            sM   = 7,
-            sY   = 2016,
-            sT   = +(new Date(sY, sM, sD)),
-            tT   = +(new Date),
-            days = parseInt((+(new Date) - sT) / 864e5),
-            cool = [
+        var sD              = 11,
+            sM              = 7,
+            sY              = 2016,
+            sT              = +(new Date(sY, sM, sD)),
+            tT              = +(new Date),
+            days            = parseInt((+(new Date) - sT) / 864e5),
+            cool            = [
                 new CoolDate(+(new Date(sY, sM + 3, sD)), "3 месяца", CoolDate.MONTH),
-                new CoolDate(+(new Date(sY, sM + 6, sD)), "полгода", CoolDate.MONTH),
+                new CoolDate(+(new Date(sY, sM + 6, sD)), "Полгода", CoolDate.MONTH),
                 new CoolDate(+(new Date(sY, sM + 9, sD)), "9 месяцев", CoolDate.MONTH),
 
                 new CoolDate(sT + 111 * 864e5, "111 дней", CoolDate.COUNT),
@@ -94,7 +94,8 @@
                 new CoolDate(sT + 210 * 864e5, "2 1 0 дней", CoolDate.COUNT),
                 new CoolDate(sT + 222 * 864e5, "222 дня", CoolDate.COUNT),
             ],
-            nearest;
+            nearest,
+            nearestIterator = 0;
 
         cool.sort(function (a, b) {
             return a.timestamp - b.timestamp;
@@ -102,13 +103,30 @@
 
         nearest = cool.filter(function (cool) {
             return (cool.timestamp - tT) / 864e5 > 0;
-        })[0];
+        });
 
-        $(".days")
+        $(".title.days")
             .text(days);
 
+        $(".text .days")
+            .text(
+                Slavunya
+                    .math(days)
+                    .declination([
+                        "день",
+                        "деня",
+                        "деней"
+                    ])
+            );
+
         $("#nearest")
-            .html(nearest + "");
+            .html(nearest[nearestIterator] + "")
+            .on("click", function () {
+                nearestIterator = nearestIterator < nearest.length - 1 ? nearestIterator + 1 : 0;
+
+                $(this)
+                    .html(nearest[nearestIterator] + "");
+            });
 
         $("body")
             .delay(2e3)
