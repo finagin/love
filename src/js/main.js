@@ -157,6 +157,14 @@
 
                 $(this)
                     .html(nearest[nearestIterator] + "");
+            })
+            .on("contextmenu", function (e) {
+                e.preventDefault();
+
+                nearestIterator = nearestIterator > 0 ? nearestIterator - 1 : nearest.length - 1;
+
+                $(this)
+                    .html(nearest[nearestIterator] + "");
             });
 
         $("body")
