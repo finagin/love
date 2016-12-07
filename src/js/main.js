@@ -1,38 +1,5 @@
 (function ($) {
 
-    function title(days) {
-
-        var words = [
-                "День",
-                "Дня",
-                "Дней"
-            ],
-            word,
-            a, b;
-
-        a = days / 10;
-        a = a - Math.floor(a);
-        a *= 10;
-
-        b = days / 100;
-        b = b - Math.floor(b);
-        b *= 100;
-
-        if (days == 1) {
-            return " завтра";
-        } else if (days == 2) {
-            return " послезавтра";
-        } else if (a == 1 || !(b > 10 && b < 20)) {
-            word = words[0];
-        } else if (a in [2, 3, 4]) {
-            word = words[1];
-        } else {
-            word = words[2];
-        }
-
-        return " через " + days + " " + word;
-    }
-
     $(function () {
 
         (function (window) {
@@ -56,14 +23,25 @@
                     var days = Math.ceil((this.__timestamp - tT) / 864e5);
 
                     return [
-                        (days == 1 ? "Завтра" : days == 2 ? "Послезавтра" : ([
-                            "Через",
-                            "<b>" + days + "</b>",
-                            Slavunya.math(days).declination(["день", "деня", "дней"])
-                        ].join(" "))),
-                        "будет",
-                        this.__type + ".",
-                        this.__title
+                        (days == 0 ? "Сегодня" : [
+                            days == 1 ? "Завтра" : days == 2 ? "Послезавтра" : (
+                                [
+                                    "Через",
+                                    "<b>" + days + "</b>",
+                                    Slavunya
+                                        .math(days)
+                                        .declination([
+                                            "день",
+                                            "дня",
+                                            "дней"
+                                        ])
+                                        .toLowerCase()
+                                ].join(" ")
+                            ),
+                            "будет"
+                        ].join(" ")),
+                        this.__type + ":",
+                        this.__title + "."
                     ].join(" ");
                 }
             };
@@ -74,25 +52,46 @@
             window.CoolDate.__defineGetter__("COUNT", function () {
                 return "Красивое количество дней";
             });
+            window.CoolDate.__defineGetter__("IMPORTANT", function () {
+                return "Важное событие";
+            });
 
         })(window);
 
-        var sD              = 11,
-            sM              = 7,
-            sY              = 2016,
+        function notEmpty(item) {
+            return item.length
+        }
+
+        var hD              = location.hash.replace("#", "").split("/").filter(notEmpty),
+            sD              = hD[2] || 11,
+            sM              = (hD[1] || 8) - 1,
+            sY              = hD[0] || 2016,
             sT              = +(new Date(sY, sM, sD)),
             tT              = +(new Date),
             days            = parseInt((+(new Date) - sT) / 864e5),
             cool            = [
+                /**
+                 * Круглые даты
+                 */
                 new CoolDate(+(new Date(sY, sM + 3, sD)), "3 месяца", CoolDate.MONTH),
                 new CoolDate(+(new Date(sY, sM + 6, sD)), "Полгода", CoolDate.MONTH),
                 new CoolDate(+(new Date(sY, sM + 9, sD)), "9 месяцев", CoolDate.MONTH),
 
+                /**
+                 * Красивые числа
+                 */
                 new CoolDate(sT + 111 * 864e5, "111 дней", CoolDate.COUNT),
                 new CoolDate(sT + 123 * 864e5, "123 дня", CoolDate.COUNT),
                 new CoolDate(sT + 200 * 864e5, "200 дней", CoolDate.COUNT),
                 new CoolDate(sT + 210 * 864e5, "2 1 0 дней", CoolDate.COUNT),
                 new CoolDate(sT + 222 * 864e5, "222 дня", CoolDate.COUNT),
+
+                /**
+                 * Важные события
+                 */
+                new CoolDate(+(new Date(sY + 1, 1, 14)), "Первое \"14 февраля\" вместе", CoolDate.IMPORTANT),
+                new CoolDate(+(new Date(sY + 1, 1, 23)), "Первое \"23 февраля\" вместе", CoolDate.IMPORTANT),
+                new CoolDate(+(new Date(sY + 1, 2, 8)), "Первое \"8 марта\" вместе", CoolDate.IMPORTANT)
             ],
             nearest,
             nearestIterator = 0;
@@ -102,7 +101,7 @@
         });
 
         nearest = cool.filter(function (cool) {
-            return (cool.timestamp - tT) / 864e5 > 0;
+            return (cool.timestamp - tT) / 864e5 >= 0;
         });
 
         $(".title.days")
@@ -114,8 +113,8 @@
                     .math(days)
                     .declination([
                         "день",
-                        "деня",
-                        "деней"
+                        "дня",
+                        "дней"
                     ])
             );
 
