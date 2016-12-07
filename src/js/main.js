@@ -1,7 +1,7 @@
 (function ($, $$) {
 
     if ($$.urlParams("debug")) {
-        $$.debug = true;
+        $$.debug;
     }
 
     $(function () {
