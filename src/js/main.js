@@ -74,9 +74,9 @@
         }
 
         var hD              = location.hash.replace("#", "").split("/").filter(notEmpty),
-            sD              = hD[2] || 11,
+            sD              = parseInt(hD[2]) || 11,
             sM              = (hD[1] || 8) - 1,
-            sY              = hD[0] || 2016,
+            sY              = parseInt(hD[0]) || 2016,
             sT              = +(new Date(sY, sM, sD)),
             tT              = +(new Date),
             days            = parseInt((+(new Date) - sT) / 864e5),
