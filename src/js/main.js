@@ -117,16 +117,21 @@
                 new CoolDate(firstImportant(2, 8), "Первое \"8 марта\" вместе", CoolDate.IMPORTANT)
             ],
             nearest,
+            nearestLength   = 0,
             nearestIterator = 0;
-
-        $$.log(hD, sD, sM, sY, cool);
 
         cool.sort(function (a, b) {
             return a.timestamp - b.timestamp;
         });
 
-        nearest = cool.filter(function (cool, index) {
-            return index < 10 && (cool.timestamp - tT) / 864e5 >= 0;
+        nearest = cool.filter(function (cool) {
+            if (nearestLength < 10) {
+                if ((cool.timestamp - tT) / 864e5 >= 0) {
+                    nearestLength++;
+                    return true;
+                }
+            }
+            return false;
         });
 
         $$.log(nearest);
