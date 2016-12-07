@@ -1,6 +1,6 @@
 (function ($, $$) {
 
-    if ($$.urlParams(debug)) {
+    if ($$.urlParams("debug")) {
         $$.debug = true;
     }
 
