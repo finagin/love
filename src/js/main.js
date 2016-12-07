@@ -119,6 +119,8 @@
             nearest,
             nearestIterator = 0;
 
+        $$.log(hD, sD, sM, sY);
+
         cool.sort(function (a, b) {
             return a.timestamp - b.timestamp;
         });
