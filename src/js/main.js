@@ -119,7 +119,7 @@
             nearest,
             nearestIterator = 0;
 
-        $$.log(hD, sD, sM, sY);
+        $$.log(hD, sD, sM, sY, cool);
 
         cool.sort(function (a, b) {
             return a.timestamp - b.timestamp;
