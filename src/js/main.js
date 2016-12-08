@@ -84,16 +84,8 @@
                 /**
                  * Круглые даты
                  */
-                new CoolDate(+(new Date(sY, sM + 3, sD)), "3 месяца", CoolDate.MONTH),
-                new CoolDate(+(new Date(sY, sM + 6, sD)), "Полгода", CoolDate.MONTH),
-                new CoolDate(+(new Date(sY, sM + 9, sD)), "9 месяцев", CoolDate.MONTH),
                 new CoolDate(+(new Date(sY + 1, sM, sD)), "Год", CoolDate.MONTH),
                 new CoolDate(+(new Date(sY + 1, sM + 6, sD)), "Полтора год", CoolDate.MONTH),
-                new CoolDate(+(new Date(sY + 2, sM, sD)), "2 года", CoolDate.MONTH),
-                new CoolDate(+(new Date(sY + 3, sM, sD)), "3 года", CoolDate.MONTH),
-                new CoolDate(+(new Date(sY + 4, sM, sD)), "4 года", CoolDate.MONTH),
-                new CoolDate(+(new Date(sY + 5, sM, sD)), "5 лет", CoolDate.MONTH),
-                new CoolDate(+(new Date(sY + 6, sM, sD)), "6 лет", CoolDate.MONTH),
 
                 /**
                  * Красивые числа
@@ -118,7 +110,42 @@
             ],
             nearest,
             nearestLength   = 0,
-            nearestIterator = 0;
+            nearestIterator = 0,
+            c;
+
+        for (c = 1; c < 12; c++) {
+            cool.push(new CoolDate(
+                +(new Date(sY, sM + c, sD)),
+                [
+                    c,
+                    с == 6 ? "Полгода" : $$
+                        .math(c)
+                        .declination([
+                            "месяц",
+                            "месяца",
+                            "месяцев"
+                        ])
+                ].join(" "),
+                CoolDate.MONTH
+            ));
+        }
+
+        for (c = 2; c <= 10; c++) {
+            cool.push(new CoolDate(
+                +(new Date(sY + c, sM, sD)),
+                [
+                    c,
+                    $$
+                        .math(c)
+                        .declination([
+                            "год",
+                            "года",
+                            "лет"
+                        ])
+                ].join(" "),
+                CoolDate.MONTH
+            ));
+        }
 
         cool.sort(function (a, b) {
             return a.timestamp - b.timestamp;
