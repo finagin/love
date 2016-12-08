@@ -73,6 +73,48 @@
             return +(new Date(sY + 1, m, d));
         }
 
+        function coolNumber(number) {
+            var num  = ("" + number).split(""),
+                bool = true,
+                c, l;
+
+            for (c = 0, l = num.length - 1; c < l; c++) {
+                bool = bool && num[c] == num[c + 1];
+            }
+
+            if (bool) {
+                return bool;
+            } else {
+                bool = true;
+            }
+
+            for (c = 0, l = num.length - 1; c < l; c++) {
+                bool = bool && num[c] == num[c + 1] + 1;
+            }
+
+            if (bool) {
+                return bool;
+            } else {
+                bool = true;
+            }
+
+            for (c = 0, l = num.length - 1; c < l; c++) {
+                bool = bool && num[c] == num[c + 1] - 1;
+            }
+
+            if (bool) {
+                return bool;
+            } else {
+                bool = true;
+            }
+
+            for (c = 1, l = num.length; c < l; c++) {
+                bool = bool && num[c] == 0;
+            }
+
+            return bool;
+        }
+
         var hD              = location.hash.replace("#", "").split("/").filter(notEmpty),
             sD              = parseInt(hD[2]) || 11,
             sM              = (hD[1] || 8) - 1,
@@ -88,20 +130,6 @@
                 new CoolDate(+(new Date(sY + 1, sM + 6, sD)), "Полтора год", CoolDate.MONTH),
 
                 /**
-                 * Красивые числа
-                 */
-                new CoolDate(sT + 111 * 864e5, "111 дней", CoolDate.COUNT),
-                new CoolDate(sT + 123 * 864e5, "123 дня", CoolDate.COUNT),
-                new CoolDate(sT + 200 * 864e5, "200 дней", CoolDate.COUNT),
-                new CoolDate(sT + 210 * 864e5, "2 1 0", CoolDate.COUNT),
-                new CoolDate(sT + 222 * 864e5, "222 дня", CoolDate.COUNT),
-                new CoolDate(sT + 234 * 864e5, "234 дня", CoolDate.COUNT),
-                new CoolDate(sT + 300 * 864e5, "300 дней", CoolDate.COUNT),
-                new CoolDate(sT + 321 * 864e5, "3 2 1", CoolDate.COUNT),
-                new CoolDate(sT + 333 * 864e5, "333 дня", CoolDate.COUNT),
-                new CoolDate(sT + 345 * 864e5, "345 дней", CoolDate.COUNT),
-
-                /**
                  * Важные события
                  */
                 new CoolDate(firstImportant(1, 14), "Первое \"14 февраля\" вместе", CoolDate.IMPORTANT),
@@ -111,8 +139,11 @@
             nearest,
             nearestLength   = 0,
             nearestIterator = 0,
-            c;
+            c, l;
 
+        /**
+         * Круглые даты
+         */
         for (c = 1; c < 12; c++) {
             cool.push(new CoolDate(
                 +(new Date(sY, sM + c, sD)),
@@ -130,6 +161,9 @@
             ));
         }
 
+        /**
+         * Круглые даты
+         */
         for (c = 2; c <= 10; c++) {
             cool.push(new CoolDate(
                 +(new Date(sY + c, sM, sD)),
@@ -145,6 +179,27 @@
                 ].join(" "),
                 CoolDate.MONTH
             ));
+        }
+
+        /**
+         * Красивые числа
+         */
+        for (c = 100, l = 366 * 10; c < l; c++) {
+            if (coolNumber(c)) {
+                cool.push(new CoolDate(sT + c * 864e5,
+                    [
+                        c,
+                        $$
+                            .math(c)
+                            .declination([
+                                "день",
+                                "дня",
+                                "дней"
+                            ])
+                    ].join(" "),
+                    CoolDate.COUNT
+                ));
+            }
         }
 
         cool.sort(function (a, b) {
