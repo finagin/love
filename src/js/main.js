@@ -115,7 +115,19 @@
             return bool;
         }
 
-        var hD              = location.hash.replace("#", "").split("/").filter(notEmpty),
+        var isSwype         = false,
+            isSwypeId       = setInterval(function () {
+                $(".mail")
+                    .toggleClass("swing");
+            }, 2e3),
+            isSwypeOff      = function () {
+                isSwype = true;
+                clearInterval(isSwypeId);
+                $(".mail")
+                    .removeClass("swing");
+            },
+
+            hD              = location.hash.replace("#", "").split("/").filter(notEmpty),
             sD              = parseInt(hD[2]) || 11,
             sM              = (hD[1] || 8) - 1,
             sY              = parseInt(hD[0]) || 2016,
@@ -239,6 +251,10 @@
 
                 $(this)
                     .html(nearest[nearestIterator] + "");
+
+                if (!isSwype) {
+                    isSwypeOff();
+                }
             })
             .on("contextmenu", function (e) {
                 e.preventDefault();
@@ -247,6 +263,10 @@
 
                 $(this)
                     .html(nearest[nearestIterator] + "");
+
+                if (!isSwype) {
+                    isSwypeOff();
+                }
             });
 
         $("body")

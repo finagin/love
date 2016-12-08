@@ -1,5 +1,6 @@
 @import "imports/08 | fonts";
 @import "imports/10 | functions";
+@import "imports/15 | animate";
 
 html, body {
   height: 100%;
@@ -81,14 +82,15 @@ body {
   cursor: pointer;
   f-no-select();
 
-  a {
-    &:hover,
-    &:focus,
-    &:visited {
-      color: #285473;
-      cursor: pointer;
-      text-decoration: none;
-      border-bottom: 1px dotted #285473;
+  &.swing {
+    -webkit-animation: swing 1s ease;
+    animation: swing 1s ease;
+    -webkit-animation-iteration-count: 1;
+    animation-iteration-count: 1;
+
+    &:hover {
+      -webkit-animation: none;
+      animation: none;
     }
   }
 }
