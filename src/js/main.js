@@ -115,26 +115,26 @@
             return bool;
         }
 
-        var isSwype         = false,
-            isSwypeId       = setInterval(function () {
+        var isSwype                 = false,
+            isSwypeId               = setInterval(function () {
                 $(".mail")
                     .toggleClass("swing");
             }, 2e3),
-            isSwypeOff      = function () {
+            isSwypeOff              = function () {
                 isSwype = true;
                 clearInterval(isSwypeId);
                 $(".mail")
                     .removeClass("swing");
             },
 
-            hD              = location.hash.replace("#", "").split("/").filter(notEmpty),
-            sD              = parseInt(hD[2]) || 11,
-            sM              = (hD[1] || 8) - 1,
-            sY              = parseInt(hD[0]) || 2016,
-            sT              = +(new Date(sY, sM, sD)),
-            tT              = +(new Date),
-            days            = parseInt((+(new Date) - sT) / 864e5),
-            cool            = [
+            hD                      = location.hash.replace("#", "").split("/").filter(notEmpty),
+            sD                      = parseInt(hD[2]) || 11,
+            sM                      = (hD[1] || 8) - 1,
+            sY                      = parseInt(hD[0]) || 2016,
+            sT                      = +(new Date(sY, sM, sD)),
+            tT                      = +(new Date),
+            days                    = parseInt((+(new Date) - sT) / 864e5),
+            cool                    = [
                 /**
                  * Круглые даты
                  */
@@ -149,8 +149,30 @@
                 new CoolDate(firstImportant(2, 8), "Первое \"8 марта\" вместе", CoolDate.IMPORTANT)
             ],
             nearest,
-            nearestLength   = 0,
-            nearestIterator = 0,
+            nearestLength           = 0,
+            nearestIterator         = 0,
+            js_scroll_position      = (function () {
+                var p, c, r;
+                p = jQuery('.js-scroll');
+                c = p.find('div');
+
+                r = (c.width() - p.width()) / 2;
+
+                p.scrollLeft(r);
+
+                return r;
+            })(),
+            js_scroll_timer         = +(new Date),
+            js_scroll_timer_handler = function () {
+                var t = +(new Date);
+
+                if (js_scroll_timer + 15e2 < t) {
+                    js_scroll_timer = t;
+                    return true;
+                } else {
+                    return false;
+                }
+            },
             c, l;
 
         /**
@@ -220,7 +242,7 @@
 
         nearest = cool.filter(function (cool) {
             if (nearestLength < 10) {
-                if ((cool.timestamp - tT) / 864e5 >= 0) {
+                if (Math.ceil((cool.timestamp - tT) / 864e5) >= 0) {
                     nearestLength++;
                     return true;
                 }
@@ -244,29 +266,49 @@
                     ])
             );
 
-        $("#nearest")
-            .html(nearest[nearestIterator] + "")
-            .on("click", function () {
-                nearestIterator = nearestIterator < nearest.length - 1 ? nearestIterator + 1 : 0;
 
-                $(this)
-                    .html(nearest[nearestIterator] + "");
-
-                if (!isSwype) {
-                    isSwypeOff();
-                }
-            })
-            .on("contextmenu", function (e) {
+        function nearestChange(e) {
+            if (e) {
                 e.preventDefault();
+            }
 
-                nearestIterator = nearestIterator > 0 ? nearestIterator - 1 : nearest.length - 1;
+            $("#nearest")
+                .html(nearest[nearestIterator] + "");
 
-                $(this)
-                    .html(nearest[nearestIterator] + "");
+            if (!isSwype) {
+                isSwypeOff();
+            }
+        }
 
-                if (!isSwype) {
-                    isSwypeOff();
+        function nearestNext(e) {
+            nearestIterator = nearestIterator < nearest.length - 1 ? nearestIterator + 1 : 0;
+            nearestChange(e);
+        }
+
+        function nearestPrev(e) {
+            nearestIterator = nearestIterator > 0 ? nearestIterator - 1 : nearest.length - 1;
+            nearestChange(e);
+        }
+
+        $("#nearest")
+            .html(nearest[nearestIterator] + "");
+
+
+        $("#nearest-wrap .js-scroll")
+            .on("click", nearestNext)
+            .on("contextmenu", nearestPrev)
+            .on("scroll", function (e) {
+                var self = $(this);
+
+                if (js_scroll_timer_handler()) {
+                    if (self.scrollLeft() < js_scroll_position) {
+                        nearestPrev(e);
+                    } else {
+                        nearestNext(e);
+                    }
                 }
+
+                self.scrollLeft(js_scroll_position);
             });
 
         $("body")
