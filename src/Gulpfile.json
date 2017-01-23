@@ -1,8 +1,0 @@
-{
-    "path": {
-        "src": "./",
-        "root": "../",
-        "dest": "../assets/"
-    },
-    "proxy": "localhost:8888"
-}

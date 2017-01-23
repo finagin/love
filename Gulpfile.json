@@ -1,0 +1,12 @@
+{
+    "path": {
+        "src": "./src",
+        "root": "./",
+        "dest": "./assets/"
+    },
+    "proxy": {
+        "path": "love.dev",
+        "port": 80
+    },
+    "gitignore": false
+}

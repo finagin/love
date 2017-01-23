@@ -9,8 +9,8 @@
         (function (window) {
             window.CoolDate = function CoolDate(timestamp, title, type) {
                 this.__timestamp = timestamp;
-                this.__title     = title;
-                this.__type      = type.toLowerCase();
+                this.__title = title;
+                this.__type = type.toLowerCase();
             };
 
             window.CoolDate.prototype = {
@@ -28,22 +28,22 @@
 
                     return [
                         (days == 0 ? "Сегодня" : [
-                            days == 1 ? "Завтра" : days == 2 ? "Послезавтра" : (
-                                [
-                                    "Через",
-                                    "<b>" + days + "</b>",
-                                    Slavunya
-                                        .math(days)
-                                        .declination([
-                                            "день",
-                                            "дня",
-                                            "дней"
-                                        ])
-                                        .toLowerCase()
-                                ].join(" ")
-                            ),
-                            "будет"
-                        ].join(" ")),
+                                days == 1 ? "Завтра" : days == 2 ? "Послезавтра" : (
+                                            [
+                                                "Через",
+                                                "<b>" + days + "</b>",
+                                                Slavunya
+                                                    .math(days)
+                                                    .declination([
+                                                        "день",
+                                                        "дня",
+                                                        "дней"
+                                                    ])
+                                                    .toLowerCase()
+                                            ].join(" ")
+                                        ),
+                                "будет"
+                            ].join(" ")),
                         this.__type + ":",
                         this.__title + "."
                     ].join(" ");
@@ -74,7 +74,7 @@
         }
 
         function coolNumber(number) {
-            var num  = ("" + number).split(""),
+            var num = ("" + number).split(""),
                 bool = true,
                 c, l;
 
@@ -115,26 +115,28 @@
             return bool;
         }
 
-        var isSwype                 = false,
-            isSwypeId               = setInterval(function () {
-                $(".mail")
+        var isSwype = false,
+            isSwypeId = setInterval(function () {
+                $("#nearest-wrap")
                     .toggleClass("swing");
             }, 2e3),
-            isSwypeOff              = function () {
-                isSwype = true;
-                clearInterval(isSwypeId);
-                $(".mail")
-                    .removeClass("swing");
+            isSwypeOff = function () {
+                if (!isSwype) {
+                    isSwype = true;
+                    clearInterval(isSwypeId);
+                    $("#nearest-wrap")
+                        .removeClass("swing");
+                }
             },
 
-            hD                      = location.hash.replace("#", "").split("/").filter(notEmpty),
-            sD                      = parseInt(hD[2]) || 11,
-            sM                      = (hD[1] || 8) - 1,
-            sY                      = parseInt(hD[0]) || 2016,
-            sT                      = +(new Date(sY, sM, sD)),
-            tT                      = +(new Date),
-            days                    = parseInt((+(new Date) - sT) / 864e5),
-            cool                    = [
+            hD = location.hash.replace("#", "").split("/").filter(notEmpty),
+            sD = parseInt(hD[2]) || 11,
+            sM = (hD[1] || 8) - 1,
+            sY = parseInt(hD[0]) || 2016,
+            sT = +(new Date(sY, sM, sD)),
+            tT = +(new Date),
+            days = parseInt((+(new Date) - sT) / 864e5),
+            cool = [
                 /**
                  * Круглые даты
                  */
@@ -149,30 +151,7 @@
                 new CoolDate(firstImportant(2, 8), "Первое \"8 марта\" вместе", CoolDate.IMPORTANT)
             ],
             nearest,
-            nearestLength           = 0,
-            nearestIterator         = 0,
-            js_scroll_position      = (function () {
-                var p, c, r;
-                p = jQuery('.js-scroll');
-                c = p.find('div');
-
-                r = (c.width() - p.width()) / 2;
-
-                p.scrollLeft(r);
-
-                return r;
-            })(),
-            js_scroll_timer         = +(new Date),
-            js_scroll_timer_handler = function () {
-                var t = +(new Date);
-
-                if (js_scroll_timer + 15e2 < t) {
-                    js_scroll_timer = t;
-                    return true;
-                } else {
-                    return false;
-                }
-            },
+            nearestLength = 0,
             c, l;
 
         /**
@@ -182,14 +161,14 @@
             cool.push(new CoolDate(
                 +(new Date(sY, sM + c, sD)),
                 [
-                    c,
+                    c == 6 ? "" : c,
                     c == 6 ? "Полгода" : $$
-                        .math(c)
-                        .declination([
-                            "месяц",
-                            "месяца",
-                            "месяцев"
-                        ])
+                            .math(c)
+                            .declination([
+                                "месяц",
+                                "месяца",
+                                "месяцев"
+                            ])
                 ].join(" "),
                 CoolDate.MONTH
             ));
@@ -266,50 +245,21 @@
                     ])
             );
 
-
-        function nearestChange(e) {
-            if (e) {
-                e.preventDefault();
-            }
-
+        nearest.forEach(function (item) {
             $("#nearest")
-                .html(nearest[nearestIterator] + "");
+                .append(
+                    $("<div>")
+                        .addClass("swiper-slide")
+                        .html(item + "")
+                );
+        });
 
-            if (!isSwype) {
-                isSwypeOff();
-            }
-        }
-
-        function nearestNext(e) {
-            nearestIterator = nearestIterator < nearest.length - 1 ? nearestIterator + 1 : 0;
-            nearestChange(e);
-        }
-
-        function nearestPrev(e) {
-            nearestIterator = nearestIterator > 0 ? nearestIterator - 1 : nearest.length - 1;
-            nearestChange(e);
-        }
-
-        $("#nearest")
-            .html(nearest[nearestIterator] + "");
-
-
-        $("#nearest-wrap .js-scroll")
-            .on("click", nearestNext)
-            .on("contextmenu", nearestPrev)
-            .on("scroll", function (e) {
-                var self = $(this);
-
-                if (js_scroll_timer_handler()) {
-                    if (self.scrollLeft() < js_scroll_position) {
-                        nearestPrev(e);
-                    } else {
-                        nearestNext(e);
-                    }
-                }
-
-                self.scrollLeft(js_scroll_position);
-            });
+        new Swiper('.swiper-container', {
+            loop: true,
+            runCallbacksOnInit: false,
+            onSlidePrevEnd: isSwypeOff,
+            onSlideNextEnd: isSwypeOff
+        });
 
         $("body")
             .delay(2e3)
@@ -318,14 +268,13 @@
                     .addClass("ready");
                 next();
             });
-
     });
 
 })(jQuery, Slavunya);
 
 (function () {
     var bar = new ProgressBar.Path('#heart-path', {
-        easing:   'easeInOut',
+        easing: 'easeInOut',
         duration: 1400 * 2
     });
 

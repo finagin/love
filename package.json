@@ -20,15 +20,17 @@
   },
   "homepage": "https://github.com/finagin/love#readme",
   "dependencies": {
-    "browser-sync": "^2.18.2",
-    "fs": "0.0.1-security",
     "gulp": "^3.9.1",
     "gulp-autoprefixer": "^3.1.1",
     "gulp-concat": "^2.6.1",
     "gulp-csso": "^2.0.0",
+    "gulp-file": "^0.3.0",
     "gulp-rimraf": "^0.2.1",
-    "gulp-sourcemaps": "^1.9.1",
+    "gulp-sourcemaps": "^2.4.0",
     "gulp-stylus": "^2.6.0",
     "gulp-uglify": "^2.0.0"
+  },
+  "devDependencies": {
+    "browser-sync": "^2.18.6"
   }
 }
