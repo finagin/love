@@ -215,6 +215,13 @@
             }
         }
 
+        /**
+         * Личные даты
+         */
+        if (!location.hash.length) {
+            cool.push(new CoolDate(+(new Date(2017, 6, 29)), "Возвращение с практики", CoolDate.IMPORTANT));
+        }
+
         cool.sort(function (a, b) {
             return a.timestamp - b.timestamp;
         });
