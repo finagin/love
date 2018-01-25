@@ -28,22 +28,22 @@
 
                     return [
                         (days == 0 ? "Сегодня" : [
-                                days == 1 ? "Завтра" : days == 2 ? "Послезавтра" : (
-                                            [
-                                                "Через",
-                                                "<b>" + days + "</b>",
-                                                Slavunya
-                                                    .math(days)
-                                                    .declination([
-                                                        "день",
-                                                        "дня",
-                                                        "дней"
-                                                    ])
-                                                    .toLowerCase()
-                                            ].join(" ")
-                                        ),
-                                "будет"
-                            ].join(" ")),
+                            days == 1 ? "Завтра" : days == 2 ? "Послезавтра" : (
+                                [
+                                    "Через",
+                                    "<b>" + days + "</b>",
+                                    $$
+                                        .math(days)
+                                        .declination([
+                                            "день",
+                                            "дня",
+                                            "дней"
+                                        ])
+                                        .toLowerCase()
+                                ].join(" ")
+                            ),
+                            "будет"
+                        ].join(" ")),
                         this.__type + ":",
                         this.__title + "."
                     ].join(" ");
@@ -61,6 +61,57 @@
             });
 
         })(window);
+
+        function randomInteger(min, max) {
+            var rand = min + Math.random() * (max + 1 - min);
+            rand = Math.floor(rand);
+            return rand;
+        }
+
+        function move(x, color) {
+            var selector = ".title.lost",
+                color_1 = 0,
+                color_2 = 0;
+
+            if (color) {
+                color_1 = color;
+                color_2 = 200 - color;
+            }
+
+
+            $(selector + ":nth-child(even)")
+                .css({
+                    "left": (-x) + "px",
+                    "height": randomInteger(40, 70) + "%",
+                    "color": "rgb(" + color_1 + "," + color_1 + "," + color_1 + ")"
+                });
+
+            $(selector + ":nth-child(odd)")
+                .css({
+                    "left": x + "px",
+                    "color": "rgb(" + color_2 + "," + color_2 + "," + color_2 + ")"
+                });
+        }
+
+        function horror(timeout) {
+            setTimeout(__horror(randomInteger(4, 10)), timeout);
+        }
+
+        function __horror(iter) {
+            if (iter) {
+                return function () {
+                    move(randomInteger(-4, 4), randomInteger(50, 150));
+                    setTimeout(__horror(--iter), randomInteger(40, 180));
+                }
+            } else {
+                return function () {
+                    move(0);
+                    setTimeout(function () {
+                        horror(randomInteger(2e3, 6e3));
+                    }, randomInteger(50, 200));
+                }
+            }
+        }
 
         function notEmpty(item) {
             return item.length
@@ -154,6 +205,38 @@
             nearestLength = 0,
             c, l;
 
+        if (hD.length < 3) {
+            window.horrorInterval = setInterval(function () {
+                if ($("body").hasClass('ready')) {
+                    clearInterval(window.horrorInterval);
+                    $('.content')
+                        .html('')
+                        .css({
+                            "position": "relative"
+                        })
+                        .append(
+                            $('<div>')
+                                .addClass('title')
+                                .addClass('lost')
+                                .text('Love is lost.')
+                        )
+                        .append(
+                            $('<div>')
+                                .addClass('title')
+                                .addClass('lost')
+                                .text('Love is lost.')
+                        )
+                        .append(
+                            $('<div>')
+                                .addClass('title')
+                                .addClass('mask')
+                                .text('Love is lost.')
+                        );
+                    horror(100);
+                }
+            }, 100);
+        }
+
         /**
          * Круглые даты
          */
@@ -163,12 +246,12 @@
                 [
                     c == 6 ? "" : c,
                     c == 6 ? "Полгода" : $$
-                            .math(c)
-                            .declination([
-                                "месяц",
-                                "месяца",
-                                "месяцев"
-                            ])
+                        .math(c)
+                        .declination([
+                            "месяц",
+                            "месяца",
+                            "месяцев"
+                        ])
                 ].join(" "),
                 CoolDate.MONTH
             ));
@@ -243,7 +326,7 @@
 
         $(".text .days")
             .text(
-                Slavunya
+                $$
                     .math(days)
                     .declination([
                         "день",
