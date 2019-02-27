@@ -181,9 +181,9 @@
             },
 
             hD = location.hash.replace("#", "").split("/").filter(notEmpty),
-            sD = parseInt(hD[2]) || 11,
-            sM = (hD[1] || 8) - 1,
-            sY = parseInt(hD[0]) || 2016,
+            sD = parseInt(hD[2]) || 14,
+            sM = (hD[1] || 2) - 1,
+            sY = parseInt(hD[0]) || 2019,
             sT = +(new Date(sY, sM, sD)),
             tT = +(new Date),
             days = parseInt((+(new Date) - sT) / 864e5),
@@ -205,7 +205,9 @@
             nearestLength = 0,
             c, l;
 
-        if (hD.length < 3) {
+        console.log($('.content').hasClass('lost'), hD.length < 3, hD);
+
+        if ($('.content').hasClass('lost') && hD.length < 3) {
             window.horrorInterval = setInterval(function () {
                 if ($("body").hasClass('ready')) {
                     clearInterval(window.horrorInterval);
