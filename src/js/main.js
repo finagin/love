@@ -181,9 +181,9 @@
             },
 
             hD = location.hash.replace("#", "").split("/").filter(notEmpty),
-            sD = parseInt(hD[2]) || 14,
+            sD = parseInt(hD[2]) || 23,
             sM = (hD[1] || 2) - 1,
-            sY = parseInt(hD[0]) || 2019,
+            sY = parseInt(hD[0]) || 2021,
             sT = +(new Date(sY, sM, sD)),
             tT = +(new Date),
             days = parseInt((+(new Date) - sT) / 864e5),
